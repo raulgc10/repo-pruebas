@@ -32,19 +32,10 @@ jobs:
           exit 0
         fi
 
-        # Guardamos los archivos modificados en una variable de entorno para usarlos más adelante
+        # Guardamos los nombres de los archivos modificados en una variable de entorno
         echo "$CHANGED_FILES_IN_FOLDER" >> $GITHUB_ENV
 
-    - name: Crear lista de archivos adjuntos
-      run: |
-        # Crear una lista de rutas completas para los archivos adjuntos
-        ATTACHMENTS=""
-        for file in ${{ env.CHANGED_FILES_IN_FOLDER }}; do
-          ATTACHMENTS="$ATTACHMENTS ${{ github.workspace }}/$file"
-        done
-        echo "ATTACHMENTS=$ATTACHMENTS" >> $GITHUB_ENV
-
-    - name: Enviar correo con archivos adjuntos
+    - name: Enviar correo con nombres de archivos modificados
       uses: dawidd6/action-send-mail@v3
       with:
         server_address: smtp.gmail.com  # Servidor SMTP
@@ -54,7 +45,9 @@ jobs:
         from: ${{ secrets.EMAIL_USER }}
         to: 'raul1.gomez@axians.es'  # Reemplaza con la dirección de correo del destinatario
         subject: '¡Archivos modificados en el repositorio!'
-        body: 'Hola, se han modificado los siguientes archivos en el repositorio. Adjunto los archivos modificados.'
-        attachment: ${{ env.ATTACHMENTS }}  # Adjuntar los archivos modificados
+        body: |
+          Hola, se han modificado los siguientes archivos en el repositorio:
+          ${{ env.CHANGED_FILES_IN_FOLDER }}
+
 
 
