@@ -12,6 +12,12 @@ jobs:
       - name: Enviar notificación a Microsoft Teams
         run: |
           curl -H "Content-Type: application/json" -d '{
-            "title": "⚠️Cambios en archivos de configuración",
-            "text": "<at>Todos</at> Se han modificado archivos en la carpeta `config/`.\nRevisión de cambios: [Ver en GitHub](https://github.com/${{ github.repository }}/commits/${{ github.ref }})"
+            "type": "message",
+              "text": "<at>NABAHIN Ali</at> ¡Tienes un mensaje!",
+              "mentions": [
+                {
+                  "id": "ali.nabahin@axians.es",
+                  "name": "NABAHIN Ali"
+                }
+              ]
           }' ${{ secrets.TEAMS_WEBHOOK_URL }}
