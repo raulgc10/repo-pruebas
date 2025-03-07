@@ -15,13 +15,20 @@ jobs:
       with:
         fetch-depth: 0  # Asegúrate de tener acceso a todo el historial de commits
 
+    - name: Verificar historial de commits
+      run: |
+        # Mostrar los últimos 5 commits para asegurarse de que hay suficiente historial
+        git log --oneline --decorate --graph -n 5
+        git status
+
     - name: Obtener los archivos modificados
       id: files
       run: |
-        # Compara los archivos entre el último commit y el anterior para detectar los cambios
-        git diff --name-only HEAD~1 HEAD > modified_files.txt
+        # Mostrar los cambios en el último commit
+        echo "Comprobando los archivos modificados..."
+        git diff --name-only HEAD > modified_files.txt
         # Filtra los archivos modificados que estén dentro de la carpeta 'mi_carpeta'
-        CHANGED_FILES=$(grep '^mi_carpeta/' modified_files.txt)
+        CHANGED_FILES=$(grep '^ficheros/prueba/' modified_files.txt)
         echo "Archivos modificados en la carpeta 'mi_carpeta': $CHANGED_FILES"
         
         # Si hay archivos modificados, los almacenamos en una variable de entorno
@@ -32,6 +39,20 @@ jobs:
           echo "$CHANGED_FILES" >> $GITHUB_ENV  # Guardar los archivos modificados en una variable de entorno
         fi
 
+    - name: Verificar archivos modificados
+      run: |
+        echo "Archivos modificados encontrados: $CHANGED_FILES"
+
+    - name: Crear lista de archivos adjuntos
+      id: attachments
+      run: |
+        # Crear una lista de rutas completas para los archivos adjuntos
+        ATTACHMENTS=""
+        for file in $CHANGED_FILES; do
+          ATTACHMENTS="$ATTACHMENTS ${{ github.workspace }}/$file"
+        done
+        echo "ATTACHMENTS=$ATTACHMENTS" >> $GITHUB_ENV
+
     - name: Enviar correo con archivos adjuntos
       uses: dawidd6/action-send-mail@v3
       with:
@@ -40,10 +61,9 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}  # Usuario de tu correo
         password: ${{ secrets.EMAIL_PASS }}  # Contraseña de tu correo (usualmente una "App Password")
         from: ${{ secrets.EMAIL_USER }}
-        to: 'ali.nabahin@axians.es, raul1.gomez@axians.es'
+        to: 'destinatario@dominio.com'
         subject: '¡Archivos modificados en el repositorio!'
-        body: 'Hola, se han modificado los siguientes archivos en el repositorio. Adjunto los archivos modificados.'
         secure: false
-        # Adjuntamos todos los archivos modificados dentro de 'mi_carpeta'
-        attachments: |
-          ${{ github.workspace }}/$CHANGED_FILES
+        body: 'Hola, se han modificado los siguientes archivos en el repositorio. Adjunto los archivos modificados.'
+        attachment: ${{ env.ATTACHMENTS }}  # Adjuntar todos los archivos modificados
+
