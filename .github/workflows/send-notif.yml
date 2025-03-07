@@ -21,5 +21,5 @@ jobs:
             Se han modificado un fichero de configuración.
             Revisión de cambios: https://github.com/tu-usuario/tu-repo/commits/main/config/
           from: "GitHub Actions <${{ secrets.EMAIL_USER }}>"
-          to: "raulgomezcantador@gmail.com"
+          to: "ali.nabahin@axians.es"
           secure: false
