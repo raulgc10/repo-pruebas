@@ -3,7 +3,7 @@ name: Enviar Notificación por Correo con README Modificado
 on:
   push:
     paths:
-      - 'README.md'  # Monitorea solo los cambios en el archivo README.md
+      - 'readme.md'  # Monitorea solo los cambios en el archivo README.md
 
 jobs:
   send_email:
@@ -21,13 +21,13 @@ jobs:
         # Lista los archivos modificados en el último commit
         git diff --name-only HEAD~1 HEAD > modified_files.txt
         # Verifica si README.md fue modificado
-        FILE=$(cat modified_files.txt | grep -E '^README.md$')
+        FILE=$(cat modified_files.txt | grep -E '^readme.md$')
         if [ -z "$FILE" ]; then
-          echo "README.md no fue modificado"
+          echo "readme.md no fue modificado"
           exit 0  # Si README.md no fue modificado, detiene la ejecución
         else
-          echo "README.md fue modificado"
-          echo "FILE=README.md" >> $GITHUB_ENV  # Guarda la ruta del archivo modificado
+          echo "readme.md fue modificado"
+          echo "FILE=readme.md" >> $GITHUB_ENV  # Guarda la ruta del archivo modificado
         fi
         
     - name: Enviar correo con README adjunto
