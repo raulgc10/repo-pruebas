@@ -12,7 +12,6 @@ jobs:
       - name: Enviar notificación a Microsoft Teams
         run: |
           curl -X POST -H "Content-Type: application/json" -d '{
-            "type": "message",
             "text": "¡Hola <at>@NABAHIN Ali</at>, se ha hecho un push a la rama principal!",
             "mentions": [
               {
