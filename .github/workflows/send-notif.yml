@@ -11,16 +11,25 @@ jobs:
     steps:
       - name: Comprobar el código
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Obtener el archivo modificado
         id: file
         run: |
+          # Obtén el historial completo de commits para evitar el error 'HEAD~1'
+          git fetch --unshallow  # Hace que el repositorio no sea superficial
           # Lista los archivos modificados en el último commit
           git diff --name-only HEAD~1 HEAD > modified_files.txt
           # Extraemos el archivo que ha sido modificado y lo guardamos
-          FILE=$(cat modified_files.txt | grep -E '^config/.*$')
-          echo "Archivo modificado: $FILE"
-          echo "FILE=$FILE" >> $GITHUB_ENV
+          FILE=$(cat modified_files.txt | grep -E '^README.md$')
+          if [ -z "$FILE" ]; then
+            echo "README.md no fue modificado"
+            exit 0  # Si README.md no fue modificado, detiene la ejecución
+          else
+            echo "README.md fue modificado"
+            echo "FILE=README.md" >> $GITHUB_ENV  # Guarda la ruta del archivo modificado
+          fi
       
       - name: Enviar correo de notificación
         uses: dawidd6/action-send-mail@v3
