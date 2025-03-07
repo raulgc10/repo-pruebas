@@ -1,45 +1,44 @@
-name: Notificar cambios en archivos de configuración
+name: Enviar Notificación por Correo con README Modificado
 
 on:
   push:
     paths:
-      - 'readme.md'  # Se ejecuta si cambia cualquier archivo dentro de config/
+      - 'README.md'  # Monitorea solo los cambios en el archivo README.md
 
 jobs:
   send_email:
     runs-on: ubuntu-latest
-    steps:
-      - name: Comprobar el código
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Obtener el archivo modificado
-        id: file
-        run: |
-          # Lista los archivos modificados en el último commit
-          git diff --name-only HEAD~1 HEAD > modified_files.txt
-          # Extraemos el archivo que ha sido modificado y lo guardamos
-          FILE=$(cat modified_files.txt | grep -E '^README.md$')
-          if [ -z "$FILE" ]; then
-            echo "README.md no fue modificado"
-            exit 0  # Si README.md no fue modificado, detiene la ejecución
-          else
-            echo "README.md fue modificado"
-            echo "FILE=README.md" >> $GITHUB_ENV  # Guarda la ruta del archivo modificado
-          fi
-      
-      - name: Enviar correo de notificación
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com  # Cambiar si usas otro proveedor
-          server_port: 587
-          username: ${{ secrets.EMAIL_USER }}
-          password: ${{ secrets.EMAIL_PASS }}
-          subject: "⚠️ Cambios en archivos de configuración"
-          body: |
-            Hola, se ha modificado un archivo en el repositorio. Adjunto el archivo modificado.
-          from: "GitHub Actions <${{ secrets.EMAIL_USER }}>"
-          attachment: ${{ github.workspace }}/$FILE
-          to: "ali.nabahin@axians.es, raul1.gomez@axians.es"
-          secure: false
+    steps:
+    - name: Comprobar el código
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Esto asegura que se descargue todo el historial de commits
+    
+    - name: Obtener el archivo README modificado
+      id: file
+      run: |
+        # Lista los archivos modificados en el último commit
+        git diff --name-only HEAD~1 HEAD > modified_files.txt
+        # Verifica si README.md fue modificado
+        FILE=$(cat modified_files.txt | grep -E '^README.md$')
+        if [ -z "$FILE" ]; then
+          echo "README.md no fue modificado"
+          exit 0  # Si README.md no fue modificado, detiene la ejecución
+        else
+          echo "README.md fue modificado"
+          echo "FILE=README.md" >> $GITHUB_ENV  # Guarda la ruta del archivo modificado
+        fi
+        
+    - name: Enviar correo con README adjunto
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com  # O el servidor SMTP que estés utilizando
+        server_port: 587
+        username: ${{ secrets.EMAIL_USER }}  # Usuario de tu correo
+        password: ${{ secrets.EMAIL_PASS }}  # Contraseña de tu correo (usualmente una "App Password")
+        from: ${{ secrets.EMAIL_USER }}
+        to: 'ali.nabahin@axians.es, raul1.gomez@axians.es'
+        subject: '¡README.md modificado en el repositorio!'
+        body: 'Hola, se ha modificado el archivo README.md en el repositorio. Adjunto el archivo modificado.'
+        attachment: ${{ github.workspace }}/$FILE  # Adjunta el archivo README.md modificado
