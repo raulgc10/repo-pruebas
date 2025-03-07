@@ -22,4 +22,4 @@ jobs:
             Revisión de cambios: https://github.com/tu-usuario/tu-repo/commits/main/config/
           from: "GitHub Actions <${{ secrets.EMAIL_USER }}>"
           to: "raulgomezcantador@gmail.com"
-          secure: true
+          secure: false
