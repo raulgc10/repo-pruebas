@@ -12,6 +12,6 @@ jobs:
       - name: Enviar notificación a Microsoft Teams
         run: |
           curl -H "Content-Type: application/json" -d '{
-            "title": "⚠️ <at>Todos</at> Cambios en archivos de configuración",
-            "text": "Se han modificado archivos en la carpeta `config/`.\nRevisión de cambios: [Ver en GitHub](https://github.com/${{ github.repository }}/commits/${{ github.ref }})"
+            "title": "⚠️Cambios en archivos de configuración",
+            "text": "<at>Todos</at> Se han modificado archivos en la carpeta `config/`.\nRevisión de cambios: [Ver en GitHub](https://github.com/${{ github.repository }}/commits/${{ github.ref }})"
           }' ${{ secrets.TEAMS_WEBHOOK_URL }}
