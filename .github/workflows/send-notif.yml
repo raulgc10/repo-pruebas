@@ -9,6 +9,19 @@ jobs:
   send_email:
     runs-on: ubuntu-latest
     steps:
+      - name: Comprobar el código
+        uses: actions/checkout@v3
+
+      - name: Obtener el archivo modificado
+        id: file
+        run: |
+          # Lista los archivos modificados en el último commit
+          git diff --name-only HEAD~1 HEAD > modified_files.txt
+          # Extraemos el archivo que ha sido modificado y lo guardamos
+          FILE=$(cat modified_files.txt | grep -E '^config/.*$')
+          echo "Archivo modificado: $FILE"
+          echo "FILE=$FILE" >> $GITHUB_ENV
+      
       - name: Enviar correo de notificación
         uses: dawidd6/action-send-mail@v3
         with:
@@ -18,8 +31,8 @@ jobs:
           password: ${{ secrets.EMAIL_PASS }}
           subject: "⚠️ Cambios en archivos de configuración"
           body: |
-            Se han modificado un fichero de configuración.
-            Revisión de cambios: https://github.com/tu-usuario/tu-repo/commits/main/config/
+            Hola, se ha modificado un archivo en el repositorio. Adjunto el archivo modificado.
           from: "GitHub Actions <${{ secrets.EMAIL_USER }}>"
+          attachment: ${{ github.workspace }}/$FILE
           to: "ali.nabahin@axians.es"
           secure: false
