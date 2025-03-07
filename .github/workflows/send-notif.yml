@@ -17,8 +17,6 @@ jobs:
       - name: Obtener el archivo modificado
         id: file
         run: |
-          # Obtén el historial completo de commits para evitar el error 'HEAD~1'
-          git fetch --unshallow  # Hace que el repositorio no sea superficial
           # Lista los archivos modificados en el último commit
           git diff --name-only HEAD~1 HEAD > modified_files.txt
           # Extraemos el archivo que ha sido modificado y lo guardamos
