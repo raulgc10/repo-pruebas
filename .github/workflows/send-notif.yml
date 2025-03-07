@@ -11,13 +11,17 @@ jobs:
     steps:
       - name: Enviar notificación a Microsoft Teams
         run: |
-          curl -H "Content-Type: application/json" -d '{
-            "type": "message",
-              "text": "<at>NABAHIN Ali</at> ¡Tienes un mensaje!",
-              "mentions": [
-                {
-                  "id": "ali.nabahin@axians.es",
-                  "name": "NABAHIN Ali"
-                }
-              ]
+          curl -X POST -H "Content-Type: application/json" -d '{
+          "type": "message",
+          "text": "¡Hola <at>@NABAHIN Ali</at>, se ha hecho un push a la rama principal!",
+          "mentions": [
+            {
+              "id": 1,
+              "mentionText": "@NABAHIN Ali",
+              "mentioned": {
+                "id": "8:ali.nabahin@axians.es",  # El ID del usuario o su correo
+                "name": "NABAHIN Ali"
+              }
+            }
+          ]
           }' ${{ secrets.TEAMS_WEBHOOK_URL }}
