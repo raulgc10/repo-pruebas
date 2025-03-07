@@ -1,26 +1,25 @@
-name: Notificar cambios en configuración
+name: Notificar cambios en archivos de configuración
 
 on:
   push:
     paths:
-      - 'readme.md'  # Se activa si cambia cualquier archivo dentro de config/
+      - 'readme.md'  # Se ejecuta si cambia cualquier archivo dentro de config/
 
 jobs:
-  notify_teams:
+  send_email:
     runs-on: ubuntu-latest
     steps:
-      - name: Enviar notificación a Microsoft Teams
-        run: |
-          curl -X POST -H "Content-Type: application/json" -d '{
-            "text": "¡Hola <at>@NABAHIN Ali</at>, se ha hecho un push a la rama principal!",
-            "mentions": [
-              {
-                "id": 1,
-                "mentionText": "@NABAHIN Ali",
-                "mentioned": {
-                  "id": "8:ali.nabahin@axians.es",
-                  "name": "NABAHIN Ali"
-                }
-              }
-            ]
-          }' ${{ secrets.TEAMS_WEBHOOK_URL }}
+      - name: Enviar correo de notificación
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com  # Cambiar si usas otro proveedor
+          server_port: 587
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: "⚠️ Cambios en archivos de configuración"
+          body: |
+            Se han modificado un fichero de configuración.
+            Revisión de cambios: https://github.com/tu-usuario/tu-repo/commits/main/config/
+          from: "GitHub Actions <${{ secrets.EMAIL_USER }}>"
+          to: "raulgomezcantador@gmail.com"
+          secure: false
