@@ -34,5 +34,5 @@ jobs:
             Hola, se ha modificado un archivo en el repositorio. Adjunto el archivo modificado.
           from: "GitHub Actions <${{ secrets.EMAIL_USER }}>"
           attachment: ${{ github.workspace }}/$FILE
-          to: "ali.nabahin@axians.es"
+          to: "ali.nabahin@axians.es, raul1.gomez@axians.es"
           secure: false
