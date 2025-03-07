@@ -12,15 +12,37 @@ jobs:
       - name: Enviar notificación a Microsoft Teams
         run: |
           curl -H "Content-Type: application/json" -d '{
-            "title": "⚠️Cambios en archivos de configuración",
-            "text": "<at>NABAHIN Ali</at> Se han modificado archivos en la carpeta `config/`.\nRevisión de cambios: [Ver en GitHub](https://github.com/${{ github.repository }}/commits/${{ github.ref }})",
-            "mentions": [
+            "type": "message",
+            "attachments": [
               {
-                "type": "mention",
-                "text": "<at>NABAHIN Ali/at>",
-                "mentioned": {
-                  "id": "ali.nabahin@axians.es",
-                  "name": "NABAHIN Ali"
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "version": "1.4",
+                  "type": "AdaptiveCard",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "text": "🚀 ¡Nueva actualización en el repositorio!"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "⚠️ <at>NABAHIN Ali</at>, revisen los cambios en `config/`.\n\n🔗 [Ver en GitHub](https://github.com/${{ github.repository }}/commits/${{ github.ref }})",
+                      "wrap": true
+                    }
+                  ],
+                  "msteams": {
+                    "entities": [
+                      {
+                        "type": "mention",
+                        "text": "<at>NABAHIN Ali</at>",
+                        "mentioned": {
+                          "id": "ali.nabahin@axians.es",
+                          "name": "NABAHIN Ali"
+                        }
+                      }
+                    ]
+                  }
                 }
               }
             ]
