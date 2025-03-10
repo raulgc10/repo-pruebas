@@ -1,53 +1,45 @@
-name: Enviar Notificación por Correo con Archivos Modificados
+name: Notify Changes via Email
 
 on:
   push:
     paths:
-      - 'ficheros/prueba/**'  # Monitorea todos los cambios dentro de la carpeta 'ficheros/prueba'
+      - 'ficheros/prueba/**'
 
 jobs:
-  send_email:
+  notify:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Comprobar el código
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Asegúrate de tener acceso a todo el historial de commits
+        fetch-depth: 0 # Para obtener el historial completo y ver los cambios
 
-    - name: Obtener archivos modificados
-      id: files
+    - name: Check for changes
+      id: check_changes
       run: |
-        # Mostrar los archivos modificados en el último commit
-        CHANGED_FILES=$(git diff --name-only HEAD)
-        echo "Archivos modificados: $CHANGED_FILES"
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 'ficheros/prueba/')
+        echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
 
-        # Filtrar los archivos modificados dentro de 'ficheros/prueba'
-        CHANGED_FILES_IN_FOLDER=$(echo "$CHANGED_FILES" | grep '^ficheros/prueba/')
-        echo "Archivos modificados dentro de ficheros/prueba: $CHANGED_FILES_IN_FOLDER"
-
-        # Si no hay archivos modificados en 'ficheros/prueba', terminamos el trabajo
-        if [ -z "$CHANGED_FILES_IN_FOLDER" ]; then
-          echo "No hay archivos modificados en ficheros/prueba"
-          exit 0
-        fi
-
-        # Guardamos los nombres de los archivos modificados en una variable de entorno
-        echo "$CHANGED_FILES_IN_FOLDER" >> $GITHUB_ENV
-
-    - name: Enviar correo con nombres de archivos modificados
+    - name: Send Email Notification
+      if: env.changed_files != ''
       uses: dawidd6/action-send-mail@v3
       with:
-        server_address: smtp.gmail.com  # Servidor SMTP
+        server_address: smtp.gmail.com
         server_port: 587
-        username: ${{ secrets.EMAIL_USER }}  # Usuario de tu correo
-        password: ${{ secrets.EMAIL_PASS }}  # Contraseña de tu correo (secreto EMAIL_PASS)
-        from: ${{ secrets.EMAIL_USER }}
-        to: 'raul1.gomez@axians.es'  # Reemplaza con la dirección de correo del destinatario
-        subject: '¡Archivos modificados en el repositorio!'
+        username: ${{ secrets.EMAIL_USER }}
+        password: ${{ secrets.EMAIL_PASS }}
+        subject: "Cambios detectados en la carpeta"
         body: |
-          Hola, se han modificado los siguientes archivos en el repositorio:
-          ${{ env.CHANGED_FILES_IN_FOLDER }}
+          Se detectaron cambios en los siguientes archivos:
+          ${{ env.changed_files }}
+          
+          Detalles de los cambios:
+          $(git diff ${{ github.event.before }} ${{ github.sha }} 'ruta/de/la/carpeta/')
+        to: "raul1.gomez@axians.es"
+        secure: false
+        from: "${{ secrets.EMAIL_USER }}"
+
 
 
 
