@@ -19,7 +19,11 @@ jobs:
       id: check_changes
       run: |
         CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 'ficheros/prueba/')
+        DIFF_CONTENT=$(git diff ${{ github.event.before }} ${{ github.sha }} 'ficheros/prueba/')
         echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
+        echo "diff_content<<EOF" >> $GITHUB_ENV
+        echo "$DIFF_CONTENT" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: Send Email Notification
       if: env.changed_files != ''
@@ -35,11 +39,7 @@ jobs:
           ${{ env.changed_files }}
           
           Detalles de los cambios:
-          $(git diff ${{ github.event.before }} ${{ github.sha }} 'ficheros/prueba/')
+          ${{ env.diff_content }}
         to: "raul1.gomez@axians.es"
-        secure: false
         from: "${{ secrets.EMAIL_USER }}"
-
-
-
 
