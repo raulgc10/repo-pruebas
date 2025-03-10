@@ -34,8 +34,7 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
         subject: "Cambios detectados en la carpeta"
-        content_type: text/html
-        body: |
+        html_body: |
           <p><b>Se detectaron cambios en los siguientes archivos:</b></p>
           <pre>${{ env.changed_files }}</pre>
           
