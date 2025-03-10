@@ -34,12 +34,13 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASS }}
         subject: "Cambios detectados en la carpeta"
+        content_type: text/html
         body: |
-          Se detectaron cambios en los siguientes archivos:
-          ${{ env.changed_files }}
+          <p><b>Se detectaron cambios en los siguientes archivos:</b></p>
+          <pre>${{ env.changed_files }}</pre>
           
-          Detalles de los cambios:
-          ${{ env.diff_content }}
+          <p><b>Detalles de los cambios:</b></p>
+          <pre>${{ env.diff_content }}</pre>
         to: "raul1.gomez@axians.es"
         from: "${{ secrets.EMAIL_USER }}"
 
