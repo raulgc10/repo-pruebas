@@ -35,7 +35,7 @@ jobs:
           ${{ env.changed_files }}
           
           Detalles de los cambios:
-          $(git diff ${{ github.event.before }} ${{ github.sha }} 'ruta/de/la/carpeta/')
+          $(git diff ${{ github.event.before }} ${{ github.sha }} 'ficheros/prueba/')
         to: "raul1.gomez@axians.es"
         secure: false
         from: "${{ secrets.EMAIL_USER }}"
